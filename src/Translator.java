@@ -24,7 +24,7 @@ public class Translator
                 .mapToObj(index -> this.wordToMorse(words.get(index)))
                 .collect(Collectors.toList());
 
-        return String.join("/ ", morse).trim();
+        return String.join("       ", morse).trim();
     }
 
     public String fromMorse(String sentence)
