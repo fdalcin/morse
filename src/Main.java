@@ -16,7 +16,9 @@ public class Main
 
         System.out.println("Now, type a morse code to translate:");
 
+        String sentence = translator.fromMorse(scanner.nextLine());
+
         System.out.println("Morse code translated is:");
-        System.out.println(translator.fromMorse(scanner.nextLine()));
+        System.out.println(sentence);
     }
 }

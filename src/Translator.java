@@ -1,14 +1,13 @@
 import com.sun.xml.internal.ws.util.StringUtils;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Translator
 {
+    protected String separator = "       ";
     protected HashMap<String, String> morseMap;
 
     public Translator()
@@ -18,34 +17,36 @@ public class Translator
 
     public String toMorse(String sentence)
     {
-        List<String> words = Stream.of(sentence.split("[ \n]")).collect(Collectors.toList());
+        Stream words = Stream.of(sentence.split("[ \n]"));
 
-        List<String> morse = IntStream.range(0, words.size())
-                .mapToObj(index -> this.wordToMorse(words.get(index)))
-                .collect(Collectors.toList());
+        String morse = words
+                .map(word -> this.wordToMorse(word.toString()))
+                .collect(Collectors.joining(this.separator))
+                .toString();
 
-        return String.join("/ ", morse).trim();
+        return morse.trim();
     }
 
     public String fromMorse(String sentence)
     {
-        List<String> letters = Stream.of(sentence.split("[\\s\n]")).collect(Collectors.toList());
+        sentence = sentence.replaceAll(this.separator, " / ");
 
-        List<String> regular = IntStream.range(0, letters.size())
-                .mapToObj(index -> this.morseToLetter(letters.get(index)))
-                .filter(string -> string != null)
-                .collect(Collectors.toList());
+        Stream letters = Stream.of(sentence.split("[\\s\n]"));
 
-        return StringUtils.capitalize(String.join("", regular).toLowerCase()).trim();
+        String regular = letters
+                .map(letter -> this.morseToLetter(letter.toString()))
+                .filter(s -> s != null)
+                .collect(Collectors.joining(""))
+                .toString();
+
+        return StringUtils.capitalize(regular.toLowerCase().trim());
     }
 
     protected String wordToMorse(String word)
     {
-        List<String> morse = word.chars()
+        return word.chars()
                 .mapToObj(character -> this.getMorseEquivalent((char) character))
-                .collect(Collectors.toList());
-
-        return String.join("", morse);
+                .collect(Collectors.joining(" "));
     }
 
     protected String morseToLetter(String letter)
@@ -65,7 +66,7 @@ public class Translator
     {
         String value = String.valueOf(character).toUpperCase();
 
-        return this.morseMap.containsKey(value) ? this.morseMap.get(value) + " " : "?? ";
+        return this.morseMap.containsKey(value) ? this.morseMap.get(value) : "??";
     }
 
     protected String getRegularEquivalent(String letter)
